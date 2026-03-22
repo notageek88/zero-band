@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -674,10 +674,25 @@
     successMsg.style.display = 'block';
   }
 
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
     const phone = phoneInput.value.trim();
     if (!phone) { phoneInput.focus(); return; }
+
+    const btn = form.querySelector('button[type="submit"]');
+    btn.textContent = 'Отправляю...';
+    btn.disabled = true;
+
+    const BOT_TOKEN = '***REMOVED_BOT_TOKEN***';
+    const CHAT_ID = '***REMOVED_CHAT_ID***';
+        const text = '\uD83D\uDFE2 \u041D\u043E\u0432\u0430\u044F \u0437\u0430\u044F\u0432\u043A\u0430 ZERO Band' + String.fromCharCode(10,10) + '\uD83D\uDCF1 \u0422\u0435\u043B\u0435\u0444\u043E\u043D: ' + phone + String.fromCharCode(10) + '\u23F0 ' + new Date().toLocaleString('ru-RU');
+    try {
+      await fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+      });
+    } catch(err) { console.error('Telegram error:', err); }
 
     localStorage.setItem('zeroWaitlistPhone', phone);
     const newCount = savedCount + 1;
@@ -687,7 +702,6 @@
     form.style.display = 'none';
     successMsg.style.display = 'block';
   });
-
   // Phone input formatting
   phoneInput.addEventListener('input', function() {
     let v = this.value.replace(/\D/g, '');
