@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZERO Band — Связь там, где её нет</title>
+  <meta name="description" content="LoRa mesh браслет для охотников и туристов. 15 км в лесу. 7 дней работы. 0 ₽/месяц." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #111111;
+      --bg-card2: #161616;
+      --accent: #00ff88;
+      --accent-dim: #00cc6a;
+      --accent-glow: rgba(0, 255, 136, 0.15);
+      --text: #ffffff;
+      --text-muted: #888888;
+      --border: #222222;
+      --danger: #ff4444;
+      --warning: #ffaa00;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* ─── TYPOGRAPHY ─── */
+    h1, h2, h3 { font-weight: 700; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.1; }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+    h3 { font-size: 1.1rem; }
+
+    .accent { color: var(--accent); }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-size: 1.5rem; font-weight: 900; letter-spacing: 0.1em;
+      color: var(--accent); text-decoration: none;
+      text-shadow: 0 0 20px var(--accent);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1.4rem;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 0.02em;
+    }
+
+    .btn:hover {
+      background: var(--accent-dim);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn-outline:hover { background: var(--accent-glow); color: var(--accent); }
+
+    .btn-large { padding: 0.9rem 2rem; font-size: 1rem; border-radius: 8px; }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title { margin-bottom: 1rem; }
+    .section-sub { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2.5rem; max-width: 560px; }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding-top: 7rem; padding-bottom: 4rem;
+      max-width: 1100px; margin: 0 auto;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      color: var(--accent);
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em;
+      padding: 0.35rem 0.8rem; border-radius: 20px;
+      margin-bottom: 1.5rem; width: fit-content;
+    }
+
+    .hero-badge::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-title { margin-bottom: 1.25rem; }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3.5rem; }
+
+    .stats-row {
+      display: flex; gap: 2.5rem; flex-wrap: wrap;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+    .stat-val { font-size: 1.8rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ─── GRID CARDS ─── */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover { border-color: rgba(0, 255, 136, 0.3); transform: translateY(-2px); }
+
+    .card-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .card h3 { margin-bottom: 0.5rem; }
+    .card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+
+    .card-danger { border-color: rgba(255, 68, 68, 0.2); }
+    .card-danger .card-icon { filter: none; }
+    .card-danger:hover { border-color: rgba(255, 68, 68, 0.4); }
+
+    /* ─── PROBLEM SECTION ─── */
+    #problem { background: none; }
+
+    .problem-price {
+      font-size: 1.4rem; font-weight: 800;
+      color: var(--danger);
+      margin-bottom: 0.3rem;
+    }
+
+    /* ─── SOLUTION SECTION ─── */
+    #solution .card { background: var(--bg-card2); }
+    #solution .card-icon { color: var(--accent); }
+
+    /* ─── COMPARISON TABLE ─── */
+    #comparison { overflow-x: auto; }
+
+    .table-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead tr { background: #0f0f0f; }
+    thead th { padding: 1rem 1.2rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); white-space: nowrap; }
+    thead th:first-child { min-width: 160px; }
+    thead th.col-zero { color: var(--accent); font-size: 0.85rem; }
+    tbody tr { border-top: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody td { padding: 0.9rem 1.2rem; color: var(--text-muted); }
+    tbody td:first-child { color: var(--text); font-weight: 500; }
+    tbody td.col-zero { font-weight: 600; }
+
+    .check { color: var(--accent); font-size: 1.1rem; }
+    .cross { color: var(--danger); font-size: 1.1rem; }
+    .maybe { color: var(--warning); font-size: 1rem; }
+
+    .price-zero { color: var(--accent); font-weight: 700; }
+    .price-bad { color: var(--danger); }
+
+    /* ─── ROADMAP ─── */
+    #roadmap .phases { display: flex; flex-direction: column; gap: 0; position: relative; }
+    #roadmap .phases::before {
+      content: '';
+      position: absolute; left: 19px; top: 0; bottom: 0; width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--border));
+    }
+
+    .phase {
+      display: flex; gap: 1.5rem;
+      padding: 1.5rem 0;
+      position: relative;
+    }
+
+    .phase-dot {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      flex-shrink: 0; z-index: 1;
+      transition: all 0.2s;
+    }
+
+    .phase-dot.done { border-color: var(--accent); background: var(--accent); color: #000; }
+    .phase-dot.current { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); animation: ring-pulse 2s infinite; }
+
+    @keyframes ring-pulse {
+      0%, 100% { box-shadow: 0 0 0 4px var(--accent-glow); }
+      50% { box-shadow: 0 0 0 8px rgba(0, 255, 136, 0.05); }
+    }
+
+    .phase-content { flex: 1; }
+    .phase-header { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+    .phase-title { font-weight: 700; font-size: 1.05rem; }
+    .phase-date { font-size: 0.78rem; color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border); padding: 0.15rem 0.5rem; border-radius: 4px; }
+    .phase-date.done { color: var(--accent); border-color: rgba(0,255,136,0.2); }
+    .phase-date.current { color: var(--warning); border-color: rgba(255,170,0,0.2); }
+    .phase p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .phase-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+    .tag { font-size: 0.73rem; padding: 0.2rem 0.6rem; border-radius: 4px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-muted); }
+    .tag.green { border-color: rgba(0,255,136,0.2); color: var(--accent); }
+
+    /* ─── WAITLIST ─── */
+    #waitlist {
+      text-align: center;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.06) 0%, transparent 70%);
+      border-top: 1px solid var(--border);
+      padding: 5rem 2rem;
+    }
+
+    #waitlist .inner { max-width: 520px; margin: 0 auto; }
+    #waitlist h2 { margin-bottom: 0.75rem; }
+    #waitlist p { color: var(--text-muted); margin-bottom: 2rem; }
+
+    .form-row { display: flex; gap: 0.5rem; max-width: 400px; margin: 0 auto 1rem; }
+
+    input[type="tel"], input[type="text"] {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="tel"]:focus, input[type="text"]:focus { border-color: var(--accent); }
+    input::placeholder { color: var(--text-muted); }
+
+    .form-note { font-size: 0.78rem; color: var(--text-muted); }
+
+    .success-msg {
+      display: none;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    .counter {
+      display: inline-block;
+      font-size: 0.85rem; color: var(--text-muted);
+      margin-top: 1.5rem;
+    }
+    .counter span { color: var(--accent); font-weight: 700; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      max-width: 1100px; margin: 0 auto;
+    }
+
+    .footer-logo { font-size: 1.1rem; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { color: var(--text-muted); font-size: 0.8rem; }
+
+    /* ─── DIVIDER ─── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      nav { padding: 1rem; }
+      section { padding: 3.5rem 1.25rem; }
+      .stats-row { gap: 1.5rem; }
+      .form-row { flex-direction: column; }
+      footer { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+      #hero { padding-top: 5.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#" class="nav-logo">ZERO</a>
+  <a href="#waitlist" class="btn">Хочу первым</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-badge">Ранний доступ открыт</div>
+  <h1 class="hero-title">
+    Когда у всех — ноль,<br />
+    <span class="accent">у тебя всё работает</span>
+  </h1>
+  <p class="hero-sub">
+    LoRa mesh браслет для охотников и туристов. Работает там, где нет сотовой связи, спутниковой подписки и интернета. Просто работает.
+  </p>
+  <div class="hero-cta">
+    <a href="#waitlist" class="btn btn-large">Записаться в лист ожидания</a>
+    <a href="#comparison" class="btn btn-outline btn-large">Сравнить с конкурентами</a>
+  </div>
+  <div class="stats-row">
+    <div class="stat">
+      <span class="stat-val">15 км</span>
+      <span class="stat-label">в лесу</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">7 дней</span>
+      <span class="stat-label">заряд батареи</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val accent">0 ₽</span>
+      <span class="stat-label">подписка/месяц</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">~5 000 ₽</span>
+      <span class="stat-label">цена устройства</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ─── PROBLEM ─── -->
+<section id="problem">
+  <p class="section-label">Проблема</p>
+  <h2 class="section-title">Связи нет. Вариантов тоже</h2>
+  <p class="section-sub">70% территории России не покрыто сотовой связью. Существующие решения — слишком дорогие, сложные или недоступные.</p>
+
+  <div class="grid-2">
+    <div class="card card-danger">
+      <div class="card-icon">📵</div>
+      <h3>Нет покрытия</h3>
+      <p>70% территории России — тайга, горы, поля — вне зоны досягаемости любого оператора. В лесу с товарищем — уже не созвонишься.</p>
+    </div>
+    <div class="card card-danger">
+      <div class="card-icon">💸</div>
+      <div class="problem-price">$350 + $50/мес</div>
+      <h3>Garmin inReach</h3>
+      <p>Спутниковая связь работает везде. Но стоит как ежемесячный расход на семью. Подписку нужно держать активной даже зимой, когда не ходишь.</p>
+    </div>
+    <div class="card card-danger">
+      <div class="card-icon">🔧</div>
+      <h3>Meshtastic — слишком сложно</h3>
+      <p>Опенсорс LoRa решение. Отличная технология, но требует паяльника, прошивки, настройки, понимания радиосетей. Не для охотника 45 лет.</p>
+    </div>
+    <div class="card card-danger">
+      <div class="card-icon">🚫</div>
+      <h3>GoTenna недоступна в России</h3>
+      <p>Хорошая сетевая рация из США. Но на нашем рынке её не купить официально — логистика, санкции, сертификация. Серый рынок + гарантия?</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ─── SOLUTION ─── -->
+<section id="solution">
+  <p class="section-label">Решение</p>
+  <h2 class="section-title">ZERO: <span class="accent">просто работает</span></h2>
+  <p class="section-sub">Надеваете на руку, включаете приложение — устройство само создаёт сеть с другими браслетами в радиусе 15 км. Ничего не нужно настраивать.</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-icon">📡</div>
+      <h3>LoRa Mesh-сеть</h3>
+      <p>Каждый браслет — узел сети. Сигнал ретранслируется через других участников, расширяя покрытие без инфраструктуры.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📍</div>
+      <h3>GPS-трекинг</h3>
+      <p>Видите позиции всех участников группы на карте в реальном времени. Оффлайн-карты встроены.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🆘</div>
+      <h3>SOS-маяк</h3>
+      <p>Одна кнопка — тревожный сигнал всей группе с вашими координатами. Без нажатия кода, без меню.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔋</div>
+      <h3>7 дней без зарядки</h3>
+      <p>Спроектировано для длительных выходов. Экономичный LoRa чип + оптимизированное ПО = неделя без розетки.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💬</div>
+      <h3>Оффлайн-чат</h3>
+      <p>Текстовые сообщения внутри группы без интернета. Координация на охоте, планы маршрута, статус участников.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <h3>Простое приложение</h3>
+      <p>Bluetooth-связь с телефоном. Понятный интерфейс без инструкции. Установил — работает.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ─── COMPARISON ─── -->
+<section id="comparison">
+  <p class="section-label">Сравнение</p>
+  <h2 class="section-title">ZERO против альтернатив</h2>
+  <p class="section-sub">Честное сравнение по ключевым параметрам для российского охотника и туриста.</p>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Параметр</th>
+          <th class="col-zero">ZERO Band</th>
+          <th>Garmin inReach</th>
+          <th>Meshtastic DIY</th>
+          <th>Рация</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Цена устройства</td>
+          <td class="col-zero price-zero">~5 000 ₽</td>
+          <td class="price-bad">~30 000 ₽</td>
+          <td>3 000–8 000 ₽</td>
+          <td>2 000–5 000 ₽</td>
+        </tr>
+        <tr>
+          <td>Подписка</td>
+          <td class="col-zero price-zero">0 ₽/мес</td>
+          <td class="price-bad">3 500–5 000 ₽/мес</td>
+          <td class="price-zero">0 ₽/мес</td>
+          <td class="price-zero">0 ₽/мес</td>
+        </tr>
+        <tr>
+          <td>GPS-трекинг группы</td>
+          <td class="col-zero"><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✗</span></td>
+        </tr>
+        <tr>
+          <td>SOS-сигнал</td>
+          <td class="col-zero"><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="maybe">~ настройка</span></td>
+          <td><span class="cross">✗</span></td>
+        </tr>
+        <tr>
+          <td>Простота настройки</td>
+          <td class="col-zero"><span class="check">✓ без инструкции</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✗ паяльник</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Доступно в России</td>
+          <td class="col-zero"><span class="check">✓</span></td>
+          <td><span class="maybe">~ серый рынок</span></td>
+          <td><span class="check">✓ компоненты</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Форм-фактор браслет</td>
+          <td class="col-zero"><span class="check">✓</span></td>
+          <td><span class="cross">✗ клипса/трекер</span></td>
+          <td><span class="cross">✗ коробка</span></td>
+          <td><span class="cross">✗ рация</span></td>
+        </tr>
+        <tr>
+          <td>Работает без интернета</td>
+          <td class="col-zero"><span class="check">✓</span></td>
+          <td><span class="check">✓ спутник</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ─── ROADMAP ─── -->
+<section id="roadmap">
+  <p class="section-label">Дорожная карта</p>
+  <h2 class="section-title">От идеи до <span class="accent">первых продаж</span></h2>
+  <p class="section-sub">Прозрачный план. Никакого «скоро будет» — конкретные даты и метрики.</p>
+
+  <div class="phases">
+    <div class="phase">
+      <div class="phase-dot done">✓</div>
+      <div class="phase-content">
+        <div class="phase-header">
+          <span class="phase-title">Фаза 0 — Исследование</span>
+          <span class="phase-date done">Завершено</span>
+        </div>
+        <p>Анализ рынка, конкурентов, технологий. Определение целевой аудитории и ценового позиционирования. Выбор архитектуры: LoRa на базе T-Beam.</p>
+        <div class="phase-tags">
+          <span class="tag green">Рыночный анализ</span>
+          <span class="tag green">Конкурентный анализ</span>
+          <span class="tag green">Техническая валидация</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot current">→</div>
+      <div class="phase-content">
+        <div class="phase-header">
+          <span class="phase-title">Фаза 1 — Прототип</span>
+          <span class="phase-date current">Сейчас · Март–Апрель 2026</span>
+        </div>
+        <p>Рабочий прототип на T-Beam TTGO. LoRa mesh между двумя устройствами, GPS-трекинг, базовое Android-приложение. Полевые тесты в лесу с реальными охотниками.</p>
+        <div class="phase-tags">
+          <span class="tag">T-Beam TTGO</span>
+          <span class="tag">Meshtastic firmware (форк)</span>
+          <span class="tag">React Native App</span>
+          <span class="tag">Полевые тесты</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot">2</div>
+      <div class="phase-content">
+        <div class="phase-header">
+          <span class="phase-title">Фаза 2 — Предзаказы</span>
+          <span class="phase-date">Май 2026</span>
+        </div>
+        <p>Открытие предзаказов. Цель: 200 устройств × 5 000 ₽ = 1 000 000 ₽ на производство первой партии. Финансирование без внешних инвестиций.</p>
+        <div class="phase-tags">
+          <span class="tag">200 предзаказов</span>
+          <span class="tag">5 000 ₽ / шт</span>
+          <span class="tag">Лендинг + Telegram</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot">3</div>
+      <div class="phase-content">
+        <div class="phase-header">
+          <span class="phase-title">Фаза 3 — Собственная плата</span>
+          <span class="phase-date">Q3 2026</span>
+        </div>
+        <p>Разработка кастомной PCB: compact форм-фактор браслета, оптимизация питания, пылевлагозащита IP67. Производство пилотной партии 500 единиц.</p>
+        <div class="phase-tags">
+          <span class="tag">Кастомный PCB</span>
+          <span class="tag">IP67</span>
+          <span class="tag">500 единиц</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot">4</div>
+      <div class="phase-content">
+        <div class="phase-header">
+          <span class="phase-title">Фаза 4 — Первые продажи</span>
+          <span class="phase-date">Q4 2026</span>
+        </div>
+        <p>Отгрузка предзаказов. Запуск в открытую продажу. Охотничьи магазины, онлайн-магазины, туристические клубы. Сбор обратной связи для v2.</p>
+        <div class="phase-tags">
+          <span class="tag">Отгрузка</span>
+          <span class="tag">Розничные продажи</span>
+          <span class="tag">Обратная связь</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ─── WAITLIST ─── -->
+<section id="waitlist">
+  <div class="inner">
+    <p class="section-label" style="text-align:center">Ранний доступ</p>
+    <h2>Запишитесь первым</h2>
+    <p>Первые 200 участников получат устройство по предзаказной цене и будут участвовать в полевых тестах. Оставьте номер — напишем в Telegram когда откроются предзаказы.</p>
+
+    <form id="waitlistForm">
+      <div class="form-row">
+        <input type="tel" id="phoneInput" placeholder="+7 900 000-00-00" />
+        <button type="submit" class="btn">Записаться</button>
+      </div>
+      <p class="form-note">Только номер телефона. Никакого спама. Одно сообщение когда откроются предзаказы.</p>
+    </form>
+
+    <div class="success-msg" id="successMsg">
+      Готово! Вы в списке. Напишем когда откроются предзаказы 🎉
+    </div>
+
+    <p class="counter">Уже в списке: <span id="waitlistCount">47</span> человек</p>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <span class="footer-logo">ZERO</span>
+  <div class="footer-links">
+    <a href="https://github.com/notageek88/zero-band" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://t.me/zero_band" target="_blank" rel="noopener">Telegram</a>
+    <a href="#roadmap">Дорожная карта</a>
+    <a href="#comparison">Сравнение</a>
+  </div>
+  <span class="footer-copy">© 2026 ZERO Band</span>
+</footer>
+
+<script>
+  // Waitlist form with localStorage
+  const form = document.getElementById('waitlistForm');
+  const phoneInput = document.getElementById('phoneInput');
+  const successMsg = document.getElementById('successMsg');
+  const countEl = document.getElementById('waitlistCount');
+
+  // Load saved count
+  const savedCount = parseInt(localStorage.getItem('zeroWaitlistCount') || '47');
+  countEl.textContent = savedCount;
+
+  // Check if already signed up
+  if (localStorage.getItem('zeroWaitlistPhone')) {
+    form.style.display = 'none';
+    successMsg.style.display = 'block';
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const phone = phoneInput.value.trim();
+    if (!phone) { phoneInput.focus(); return; }
+
+    localStorage.setItem('zeroWaitlistPhone', phone);
+    const newCount = savedCount + 1;
+    localStorage.setItem('zeroWaitlistCount', newCount);
+    countEl.textContent = newCount;
+
+    form.style.display = 'none';
+    successMsg.style.display = 'block';
+  });
+
+  // Phone input formatting
+  phoneInput.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g, '');
+    if (v.startsWith('8')) v = '7' + v.slice(1);
+    if (v.startsWith('7') && v.length > 1) {
+      v = '+7 ' + v.slice(1, 4) + (v.length > 4 ? ' ' + v.slice(4, 7) : '') +
+          (v.length > 7 ? '-' + v.slice(7, 9) : '') +
+          (v.length > 9 ? '-' + v.slice(9, 11) : '');
+    }
+    this.value = v;
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
